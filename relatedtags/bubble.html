@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="./../style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body class="bubblebody">
+    <h1 style="color:#fff;">Related tags with respect to a particular tag</h1>
+    <div class="outer">
+      <div class="jumbotron">
+        <div role="group" class="group">
+          <button type="button" class="btn btn-secondary" onclick="changesvg('java');">Java</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('javascript');">Javascript</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('mysql');">mysql</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('android');">Android</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('python');">Python</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('objectivec');">objective-c</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('angularjs');">Angularjs</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('rubyonrails');">ruby-on-rails</button>
+        </div> 
+        <div role="group" class="group">
+          <button type="button" class="btn btn-secondary" onclick="changesvg('jquery');">jquery</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('asp');">asp.net</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('ios');">ios</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('css');">css</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('cplusplus');">C++</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('arrays');">arrays</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('php');">php</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('html');">html</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('sql');">sql</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('net');">.net</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('csharp');">c#</button>
+          <button type="button" class="btn btn-secondary" onclick="changesvg('c');">c</button>
+        </div>
+      </div>
+      <div class="bubble" id="bubble">
+        <svg class="outersvg" width="800" height="800" font-family="sans-serif" font-size="10px" text-anchor="middle" margin-left="30%"></svg>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script>
+          function changesvg(name) {
+            d3.select("svg").remove();
+            d3.select("#bubble").append("svg").attr("width",800).attr("height",800).attr("font-family","sans-serif").attr("font-size","10px").attr("text-anchor","middle")
+			         .attr("margin-left","30%").attr("fill","black").attr("class","outersvg");
+			
+            var file = name + ".csv";
+            var svg = d3.select("svg"),
+                width = +svg.attr("width"),
+                height = +svg.attr("height");
+
+            var format = d3.format(",d");
+
+            var tooltip = d3.select("body")
+                .append("div")
+                .style("position", "absolute")
+                .style("z-index", "10")
+                .style("visibility", "hidden")
+                .style("color", "white")
+                .style("padding", "8px")
+                .style("background-color", "rgba(0, 0, 0, 0.75)")
+                .style("border-radius", "6px")
+                .style("font", "12px sans-serif")
+                .text("tooltip");
+
+            var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+            var pack = d3.pack()
+                .size([width, height])
+                .padding(1.5);
+
+            d3.csv(file, function(data) {
+              data.value = +data.value;
+              if (data.value) return data;
+            }, function(error, classes) {
+              if (error) throw error;
+
+              var root = d3.hierarchy({children: classes})
+                  .sum(function(data) { return data.value; })
+                  .each(function(data) {
+                    if (id = data.data.id) {
+                      var id, i = id.lastIndexOf(".");
+                      data.id = id;
+                      data.package = id.slice(0, i);
+                      data.class = id.slice(i + 1);
+                    }
+                  });
+
+              var node = svg.selectAll(".node")
+                .data(pack(root).leaves())
+                .enter().append("g")
+                  .attr("class", "node")
+                  .attr("transform", function(data) { return "translate(" + data.x*0.5 + "," + data.y*0.5 + ")"; });
+           
+              node.append("circle")
+                  .attr("id", function(data) { return data.id; })
+                  .attr("r", function(data) { return data.r*0.5; })
+                  .style("fill", function(data) { return color(data.package); })
+                  .on("mouseover", function(data) {
+                          tooltip.text(data.id + ": " + format(data.value));
+                          tooltip.style("visibility", "visible");
+                  })
+                  .on("mousemove", function() {
+                      return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");
+                  })
+                  .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+
+              node.append("clipPath")
+                  .attr("id", function(data) { return "clip-" + data.id; })
+                .append("use")
+                  .attr("xlink:href", function(data) { return "#" + data.id; });
+
+              node.append("text")
+                  .attr("clip-path", function(data) { return "url(#clip-" + data.id + ")"; })
+                .selectAll("tspan")
+                .data(function(data) { return data.class.split(/(?=[A-Z][^A-Z])/g); })
+                .enter().append("tspan")
+                  .attr("x", 0)
+                  .attr("y", function(data, i, nodes) { return 13 + (i - nodes.length / 2 - 0.5) * 10; })
+                  .text(function(data) { return data; });
+
+              node.append("title")
+                  .text(function(data) { return data.id + "\n" + format(data.value); });
+            });
+          }
+        </script>
+      </div>
+    </div>
+  </body>
+</html>

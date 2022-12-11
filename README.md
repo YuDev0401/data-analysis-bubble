@@ -1,0 +1,8 @@
+# Data Analysis of StackOverFlow Data:  Link for the deployed code is : http://dv-project.herokuapp.com
+
+
+The first problem with Stackoverflow, that we have discussed, is its inability to recommend most similar technologies for students. Because of Stackoverlow’s huge database of questions, searching any bunch of tags will give us questions asked on those tags irrespective of where or not they are related. This might lead to students studying more than 2 different languages of the same application. For example,studying JAVA and NodeJS at the same time is not useful as they both are back-end web technologies that can be used in the same project at the same time. Instead, studying Bootstrap with NodeJS will be a lot more useful for students. Though Stackoverflow has the content to make this relation, it does not do it.
+
+The second problem with Stackoverlow is its permanent back-end database. Because, stackoverflow has been around for a long time and the system does not automatically delete questions over time, Stackoverflow will list out all questions on a given technology despite the fact that that particular technology could possibly be dead. For example, the number of Software Developers who use LISP and Fortran are extremely low in the real world. However, because Stackoverflow has a permanently persistent database, a student might still find hundreds of question on the same topic which might not be useful.
+
+The third and final aspect of our visualization is aimed at helping students identify if a particular technology has been popular of the span of the last 10 years. This will help students understand the trend that is going across the years in the industry and help them in learning technologies that are more useful towards getting a job.

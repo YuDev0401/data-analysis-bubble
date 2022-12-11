@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>IDV-SD</title>
+    <script src="d3.js" charset="utf-8"></script>
+    <script src="d3.layout.cloud.js"></script>
+    <script src="d3.wordcloud.js"></script>
+    <script src="example.words.js"></script>
+    <link rel="stylesheet" type="text/css" href="./../style.css">
+  </head>
+  <body class="wc">
+    <h1 style="color:white;">Most frequently used Tags</h1>
+    <div class="wordcloud" id='wordcloud'></div>
+    <script>
+      d3.wordcloud()
+        .size([800, 500])
+        .fill(d3.scale.ordinal().range(["#7e515a", "#ffc09e", "#fbe4d2", "#fb7f71", "#a75151"]))
+        .words(words)
+        .onwordclick(function(d, i) {
+          if (d.href) { window.location = d.href; }
+        })
+        .start();
+    </script>
+  </body>
+</html>
+
